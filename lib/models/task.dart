@@ -1,9 +1,15 @@
 class Task {
+  final String? id;
   final String task;
   final String categoryId;
   final DateTime createdAt;
 
-  Task({required this.task, required this.categoryId, required this.createdAt});
+  Task({
+    this.id,
+    required this.task,
+    required this.categoryId,
+    required this.createdAt,
+  });
 
   Map<String, dynamic> toJson() {
     return {
@@ -15,6 +21,7 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
+      id: json['id'],
       task: json['task'],
       categoryId: json['categoryId'],
       createdAt: DateTime.parse(json['createdAt']),

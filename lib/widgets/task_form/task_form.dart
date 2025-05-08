@@ -3,15 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hw53/widgets/task_form/task_form_controller.dart';
 
 class TaskForm extends StatefulWidget {
-  final void Function() onSave;
   final Widget widget;
   final TaskFormController controller;
-  const TaskForm({
-    super.key,
-    required this.controller,
-    required this.onSave,
-    required this.widget,
-  });
+
+  const TaskForm({super.key, required this.controller, required this.widget});
 
   @override
   State<TaskForm> createState() => _TaskFormState();
@@ -19,6 +14,8 @@ class TaskForm extends StatefulWidget {
 
 class _TaskFormState extends State<TaskForm> {
   String? selectedCategory;
+  bool isFetching = false;
+
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
@@ -26,11 +23,7 @@ class _TaskFormState extends State<TaskForm> {
       key: widget.controller.formKey,
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            bottom: bottomInset + 20,
-          ),
+          padding: EdgeInsets.only(left: 60, right: 60, bottom: bottomInset),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -47,10 +40,6 @@ class _TaskFormState extends State<TaskForm> {
                 ),
                 SizedBox(height: 20),
                 widget.widget,
-                ElevatedButton(
-                  onPressed: widget.onSave,
-                  child: Text('Save Task'),
-                ),
               ],
             ),
           ),

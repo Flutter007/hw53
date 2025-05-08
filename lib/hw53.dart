@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hw53/screens/tasks_screen.dart';
+import 'package:hw53/theme/light_theme.dart';
 
 class Hw53 extends StatefulWidget {
   const Hw53({super.key});
@@ -11,6 +12,6 @@ class Hw53 extends StatefulWidget {
 class _Hw53State extends State<Hw53> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: TasksScreen());
+    return MaterialApp(theme: lightTheme, home: TasksScreen());
   }
 }
