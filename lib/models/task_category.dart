@@ -6,8 +6,4 @@ class TaskCategory {
   final IconData icon;
 
   TaskCategory({required this.id, required this.label, required this.icon});
-
-  Map<String, dynamic> toJson() {
-    return {'id': id, 'label': label, 'icon': icon};
-  }
 }

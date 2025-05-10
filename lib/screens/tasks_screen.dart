@@ -3,7 +3,6 @@ import 'package:hw53/helpers/request.dart';
 import 'package:hw53/models/task.dart';
 import 'package:hw53/widgets/task_card.dart';
 import '../data/category_data.dart';
-import '../widgets/save_button.dart';
 import '../widgets/task_form/task_form.dart';
 import '../widgets/task_form/task_form_controller.dart';
 
@@ -28,17 +27,21 @@ class _TasksScreenState extends State<TasksScreen> {
     fetchTasks();
   }
 
+  void showMessage(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Task $message !')));
+    }
+  }
+
   void deleteTask(Task task) async {
     setState(() => isFetching = true);
     final url = '${baseURL}tasks/${task.id}.json';
     await request(url, method: 'DELETE');
     setState(() => isFetching = false);
     await fetchTasks();
-    if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Task deleted successfully!')));
-    }
+    showMessage('deleted');
   }
 
   Future<bool?> showDeleteConfirmingDialog() async {
@@ -88,24 +91,20 @@ class _TasksScreenState extends State<TasksScreen> {
       } else {
         setState(() {
           tasks = [];
-          return;
         });
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error fetching tasks')));
-      }
+      showMessage('error');
     } finally {
       setState(() => isFetching = false);
     }
   }
 
   void onSave() async {
-    if (controller.formKey.currentState!.validate()) {
+    if (controller.formKey.currentState!.validate() &&
+        selectedCategory != null) {
       try {
-        setState(() => isFetching = true);
+        Navigator.of(context).pop();
         final task = Task(
           task: controller.taskController.text,
           categoryId: selectedCategory!,
@@ -113,69 +112,51 @@ class _TasksScreenState extends State<TasksScreen> {
         );
         final url = '${baseURL}tasks.json';
         await request(url, method: 'POST', body: task.toJson());
-
         controller.taskController.clear();
+        if (mounted) {
+          setState(() => selectedCategory = null);
+        }
         await fetchTasks();
-        setState(() {
-          isFetching = false;
-        });
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Task created successfully!')));
-        }
+        showMessage('saved');
       } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Task created successfully!')));
-        }
-      } finally {
-        setState(() => isFetching = false);
+        showMessage('error');
       }
     }
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
   }
 
   void openTaskForm() {
     showModalBottomSheet(
       useSafeArea: true,
+      isScrollControlled: true,
       context: context,
       builder:
           (ctx) => SingleChildScrollView(
-            child: SafeArea(
-              child: Column(
-                children: [
-                  TaskForm(
-                    controller: controller,
-                    widget: DropdownMenu(
-                      label: Text('Category :'),
-                      expandedInsets: EdgeInsets.zero,
-                      onSelected: (value) {
-                        setState(() {
-                          selectedCategory = value;
-                        });
-                      },
-                      dropdownMenuEntries:
-                          categories
-                              .map(
-                                (category) => DropdownMenuEntry(
-                                  value: category.id,
-                                  label: category.label,
-                                  leadingIcon: Icon(category.icon),
-                                ),
-                              )
-                              .toList(),
-                    ),
+            child: Column(
+              children: [
+                TaskForm(
+                  onPressed: onSave,
+                  controller: controller,
+                  widget: DropdownMenu(
+                    label: Text('Category :'),
+                    expandedInsets: EdgeInsets.zero,
+                    onSelected: (value) {
+                      setState(() {
+                        selectedCategory = value;
+                      });
+                    },
+                    dropdownMenuEntries:
+                        categories
+                            .map(
+                              (category) => DropdownMenuEntry(
+                                value: category.id,
+                                label: category.label,
+                                leadingIcon: Icon(category.icon),
+                              ),
+                            )
+                            .toList(),
                   ),
-                  SaveButton(isFetching: isFetching, onPressed: onSave),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
     );

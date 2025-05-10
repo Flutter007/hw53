@@ -9,8 +9,4 @@ class TaskFormController {
   void setTask(Task task) {
     taskController.text = task.task;
   }
-
-  void dispose() {
-    taskController.dispose();
-  }
 }

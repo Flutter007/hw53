@@ -15,7 +15,7 @@ class TaskCard extends StatelessWidget {
       child: Card(
         child: ListTile(
           title: CustomText(txt: task.task),
-          subtitle: CustomText(txt: task.categoryId),
+          subtitle: CustomText(txt: task.categoryId.toUpperCase()),
           trailing: IconButton(onPressed: deleteTask, icon: Icon(Icons.delete)),
         ),
       ),
